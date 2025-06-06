@@ -1,10 +1,10 @@
 from dishka import Provider, Scope, provide
 from sqlmodel import Session
 
-from src.db import get_session
-from src.users.application.user_service import UserService
-from src.users.infrastructure.repositories.core.abstract_user_repository import AbstractUserRepository
-from src.users.infrastructure.repositories.impl.sql_user_repository import SQLUserRepository
+from db import get_session
+from users.application.user_service import UserService
+from users.infrastructure.repositories.core.abstract_user_repository import AbstractUserRepository
+from users.infrastructure.repositories.impl.sql_user_repository import SQLUserRepository
 
 
 class MainProvider(Provider):

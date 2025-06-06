@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from src.users.models import User, UserCreate, UserUpdate
+from users.models import User, UserCreate, UserUpdate
 
 class AbstractUserRepository(ABC):
     @abstractmethod

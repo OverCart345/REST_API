@@ -1,7 +1,7 @@
 from typing import List, Optional
 
-from src.users.models import User, UserCreate, UserUpdate
-from src.users.infrastructure.repositories.core.abstract_user_repository import AbstractUserRepository
+from users.models import User, UserCreate, UserUpdate
+from users.infrastructure.repositories.core.abstract_user_repository import AbstractUserRepository
 
 class UserService:
     def __init__(self, user_repository: AbstractUserRepository):
