@@ -5,3 +5,5 @@ python-dotenv
 dishka
 dishka[fastapi]
 pydantic-settings
+sqlmodel
+psycopg2-binary
