@@ -34,17 +34,6 @@ async def get_user(
     return user
 
 
-@router.get("/", response_model=List[UserRead])
-@inject
-async def get_all_users(
-    user_service: FromDishka[UserService],
-    skip: int = 0,
-    limit: int = 100,
-) -> List[UserRead]:
-    users = await user_service.get_all_users(skip=skip, limit=limit)
-    return users
-
-
 @router.patch("/{user_id}", response_model=UserRead)
 @inject
 async def update_user(

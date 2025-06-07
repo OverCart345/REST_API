@@ -1,3 +1,4 @@
+import redis.asyncio as aioredis
 from sqlmodel import create_engine, Session, SQLModel
 from core.config import settings
 
@@ -11,3 +12,12 @@ def create_db_and_tables():
 def get_session():
     with Session(engine) as session:
         yield session
+
+
+async def get_redis_client() -> aioredis.Redis:
+    client = aioredis.from_url(
+        f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}", 
+        encoding="utf-8", 
+        decode_responses=True
+    )
+    return client

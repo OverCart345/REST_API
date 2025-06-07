@@ -22,11 +22,6 @@ class SQLUserRepository(AbstractUserRepository):
         user = self.session.get(User, user_id)
         return user
 
-    async def get_all_users(self, skip: int = 0, limit: int = 100) -> List[User]:
-        statement = select(User).offset(skip).limit(limit)
-        users = self.session.exec(statement).all()
-        return users
-
     async def update_user(self, user_id: int, user_data: UserUpdate) -> Optional[User]:
         db_user = self.session.get(User, user_id)
         if not db_user:

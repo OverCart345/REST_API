@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from dishka import make_async_container
 from dishka.integrations.fastapi import setup_dishka
 
-from core.providers import create_dishka_provider
+from core.providers import MainProvider
 from users.api.routes import routers as user_router
 from db import create_db_and_tables
 
@@ -12,7 +12,7 @@ def create_app() -> FastAPI:
 
     app = FastAPI()
 
-    dishka_provider = create_dishka_provider()
+    dishka_provider = MainProvider()
     container = make_async_container(dishka_provider)
     setup_dishka(container, app)
 

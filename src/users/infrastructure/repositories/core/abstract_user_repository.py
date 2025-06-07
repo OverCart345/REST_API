@@ -13,10 +13,6 @@ class AbstractUserRepository(ABC):
         pass
 
     @abstractmethod
-    async def get_all_users(self, skip: int = 0, limit: int = 100) -> List[User]:
-        pass
-
-    @abstractmethod
     async def update_user(self, user_id: int, user_data: UserUpdate) -> Optional[User]:
         pass
 
