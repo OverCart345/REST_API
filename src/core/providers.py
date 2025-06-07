@@ -1,8 +1,8 @@
 from dishka import Provider, Scope, provide
 from typing import Optional
-from sqlalchemy.orm import Session # Assuming get_session and SQLUserRepository use this
+from sqlalchemy.orm import Session 
 
-from db import get_session, get_redis_client # Import get_redis_client from db
+from db import get_session, get_redis_client 
 from users.infrastructure.repositories.core.abstract_user_repository import AbstractUserRepository
 from users.infrastructure.repositories.impl.sql_user_repository import SQLUserRepository
 from users.infrastructure.repositories.impl.redis_user_repository import RedisUserRepository

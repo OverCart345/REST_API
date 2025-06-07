@@ -1,7 +1,7 @@
-import json
-from typing import List, Optional
 
-import redis.asyncio as aioredis # Используем redis.asyncio для aioredis
+from typing import Optional
+
+import redis.asyncio as aioredis
 
 from users.infrastructure.repositories.core.abstract_user_repository import AbstractUserRepository
 from users.models import User, UserCreate, UserUpdate

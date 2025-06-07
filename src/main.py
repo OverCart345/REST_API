@@ -4,11 +4,14 @@ from dishka.integrations.fastapi import setup_dishka
 
 from core.providers import MainProvider
 from users.api.routes import routers as user_router
+from core.config import settings 
 from db import create_db_and_tables
 
 
 def create_app() -> FastAPI:
-    create_db_and_tables()
+
+    if settings.REPO_TYPE == "sql":
+        create_db_and_tables()
 
     app = FastAPI()
 
