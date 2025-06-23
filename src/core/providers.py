@@ -12,12 +12,12 @@ import redis.asyncio as aioredis
 
 class MainProvider(Provider):
     @provide(scope=Scope.REQUEST)
-    def provide_db_session(self) -> Optional[Session]:
+    def provide_db_session(self) -> Session:
         for session in get_session():
             return session
 
     @provide(scope=Scope.APP)
-    async def provide_redis_client(self) -> Optional[aioredis.Redis]:
+    async def provide_redis_client(self) -> aioredis.Redis:
         return await get_redis_client()
 
     @provide(scope=Scope.REQUEST)
