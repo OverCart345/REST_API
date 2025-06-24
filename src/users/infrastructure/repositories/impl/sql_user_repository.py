@@ -27,7 +27,7 @@ class SQLUserRepository(AbstractUserRepository):
         if not db_user:
             return None
         
-        user_update_data = user_data.model_dump(exclude_unset=True)
+        user_update_data = user_data.model_dump(exclude_unset=True, exclude_none=True)
         for key, value in user_update_data.items():
             setattr(db_user, key, value)
         

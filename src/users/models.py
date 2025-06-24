@@ -22,3 +22,4 @@ class UserUpdate(SQLModel):
     last_name: Optional[str] = Field(default=None, max_length=100)
     first_name: Optional[str] = Field(default=None, max_length=100)
     middle_name: Optional[str] = Field(default=None, max_length=100)
+

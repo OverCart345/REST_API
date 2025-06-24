@@ -7,3 +7,7 @@ dishka[fastapi]
 pydantic-settings
 sqlmodel
 psycopg2-binary
+redis==6.2.0
+click<=8.2.0
+click_repl==0.3.0
+dotenv==0.9.9

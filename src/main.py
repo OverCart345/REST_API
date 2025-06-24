@@ -15,14 +15,13 @@ def create_app() -> FastAPI:
 
     app = FastAPI()
 
-    dishka_provider = MainProvider()
-    container = make_async_container(dishka_provider)
     setup_dishka(container, app)
-
     app.include_router(user_router.router)
 
     return app
 
+dishka_provider = MainProvider()
+container = make_async_container(dishka_provider)
 
 app = create_app()
 
