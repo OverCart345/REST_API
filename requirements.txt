@@ -8,6 +8,10 @@ pydantic-settings
 sqlmodel
 psycopg2-binary
 redis==6.2.0
-click<=8.2.0
-click_repl==0.3.0
+asyncclick==8.1.8
+asyncclick_repl==0.1.2
 dotenv==0.9.9
+aiohttp==3.12.13
+pytest==8.4.1
+pytest-aiohttp==1.1.0
+pytest-asyncio==1.0.0
