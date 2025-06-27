@@ -3,9 +3,8 @@ from typing import Optional
 from asyncclick_repl import AsyncREPL
 
 from users.application.user_service import UserService
-from users.models import UserCreate, UserRead, UserUpdate
+from users.models import UserCreate, UserUpdate
 from main import container
-from main import app
 
 @asyncclick.group(cls=AsyncREPL)
 async def cmd():
