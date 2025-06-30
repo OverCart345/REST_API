@@ -3,7 +3,7 @@ from dishka import make_async_container
 from dishka.integrations.fastapi import setup_dishka
 
 from core.providers import MainProvider
-from REST_API.src.users.presentation.api.routes import routers as user_router
+from users.presentation.api.routes import routers as user_router
 from core.config import settings 
 from db import create_db_and_tables
 

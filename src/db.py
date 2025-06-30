@@ -1,13 +1,20 @@
 import redis.asyncio as aioredis
 from sqlmodel import create_engine, Session, SQLModel
 from core.config import settings
+from sqlalchemy.orm import DeclarativeBase
+
 
 DATABASE_URL = f"postgresql://{settings.DB_USER}:{settings.DB_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
 
 engine = create_engine(DATABASE_URL, echo=True)
 
+class Base(DeclarativeBase):
+    pass
+
+
 def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
+    Base.metadata.create_all(engine)
+
 
 def get_session():
     with Session(engine) as session:

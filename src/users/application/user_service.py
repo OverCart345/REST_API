@@ -1,29 +1,41 @@
-from users.application.dto import UserCreateDTO, UserUpdateDTO, UserDTO
-from users.infrastructure.repositories.core.abstract_user_repository import AbstractUserRepository
-from users.infrastructure.models import User, FullName
-
+from users.application.models.dto import UserDTO
+from users.application.repository.abstract_user_repository import AbstractUserRepository
+from users.application.models.models import User, FullName
+from users.application.models.dto import UserDTO
+from users.application.mapper import dto_to_domain, domain_to_dto
 
 class UserService:
     def __init__(self, user_repository: AbstractUserRepository):
         self.user_repository = user_repository
 
-    async def create_user(self, user_data: UserCreateDTO) -> UserDTO:
-        user = User(
-            id=None,
-            name=FullName(
-                last_name=user_data.last_name,
-                first_name=user_data.first_name,
-                middle_name=user_data.middle_name,
-            ),
-        )
-        saved = await self.user_repository.create(user)
-        return UserDTO(**saved.dict())
+    async def create_user(self, user_data: UserDTO) -> UserDTO:
+
+        user_to_create: User = dto_to_domain(user_data)
+        created_user = await self.user_repository.create(user_to_create)
+        userDTO_response: UserDTO = domain_to_dto(created_user)
+
+        return userDTO_response
 
     async def get_user(self, user_id: int) -> UserDTO:
-        return await self.user_repository.get_user_by_id(user_id)
 
-    async def update_user(self, user_id: int, user_data: UserUpdateDTO) -> UserDTO:
-        return await self.user_repository.update_user(user_id=user_id, user_data=user_data)
+        received_user = await self.user_repository.get_by_id(user_id)
+        userDTO_response: UserDTO = domain_to_dto(received_user)
+
+        return userDTO_response
+
+    async def update_user(self, user_id: int, user_data: UserDTO) -> UserDTO:
+
+        user_for_update: User = await self.user_repository.get_by_id(user_id)
+        user_for_update.patch(**user_data.model_dump())
+
+        updated_user: User = await self.user_repository.update(user_id=user_id, user=user_for_update)
+        userDTO_response: UserDTO = domain_to_dto(updated_user)
+
+        return userDTO_response
 
     async def delete_user(self, user_id: int) -> UserDTO:
-        return await self.user_repository.delete_user(user_id)
+
+        deleted_user: User = await self.user_repository.delete(user_id)
+        userDTO_response: UserDTO = domain_to_dto(deleted_user)
+
+        return userDTO_response

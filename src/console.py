@@ -3,7 +3,6 @@ from typing import Optional
 from asyncclick_repl import AsyncREPL
 
 from users.application.user_service import UserService
-from users.models import UserCreate, UserUpdate
 from main import container
 
 @asyncclick.group(cls=AsyncREPL)

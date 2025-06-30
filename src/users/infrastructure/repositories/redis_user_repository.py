@@ -1,9 +1,8 @@
 
 from typing import Optional
-
 import redis.asyncio as aioredis
 
-from users.infrastructure.repositories.core.abstract_user_repository import AbstractUserRepository
+from users.application.repository.abstract_user_repository import AbstractUserRepository
 from users.models import User, UserCreate, UserUpdate
 
 USER_KEY_PREFIX = "user:"
