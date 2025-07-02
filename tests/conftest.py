@@ -1,7 +1,7 @@
 import pytest
 from httpx import AsyncClient, ASGITransport
 from http import HTTPStatus
-from users.models import UserRead, UserCreate, UserUpdate
+from users.presentation.models import UserCreate, UserRead, UserUpdate
 
 from main import app
 from core.config import settings

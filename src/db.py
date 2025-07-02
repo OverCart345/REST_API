@@ -1,5 +1,5 @@
 import redis.asyncio as aioredis
-from sqlmodel import create_engine, Session, SQLModel
+from sqlmodel import create_engine, Session
 from core.config import settings
 from sqlalchemy.orm import DeclarativeBase
 

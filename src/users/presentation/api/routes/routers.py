@@ -6,9 +6,10 @@ from dishka.integrations.fastapi import inject, FromDishka
 from users.application.user_service import UserService
 from users.presentation.models import UserCreate, UserRead, UserUpdate
 from users.application.models.dto import UserDTO
-
 from users.application.models.models import FullName, User
 from users.application.models.dto import UserDTO
+from users.application.exception import EntityDoesNotExist
+
 
 router = APIRouter(
     prefix="/users",
@@ -24,8 +25,8 @@ async def create_user(
 ) -> UserRead:
 
     user_data: UserDTO = UserDTO(**user_data.model_dump())
-    created_user: UserDTO = await user_service.create_user(user_data=user_data)
-    ApiResponse: UserRead = UserRead(**created_user.model_dump())
+    created_user: User = await user_service.create(user_data=user_data)
+    ApiResponse: UserRead = UserRead(id=created_user.id, **created_user.name.model_dump())
 
     return ApiResponse
 
@@ -37,10 +38,12 @@ async def get_user(
     user_service: FromDishka[UserService],
 ) -> UserRead:
 
-    received_user: UserDTO = await user_service.get_user(user_id)
-    if not received_user:
+    try:
+        received_user: UserDTO = await user_service.get(user_id)
+    except EntityDoesNotExist:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-    ApiResponse: UserRead = UserRead(**received_user.model_dump())
+
+    ApiResponse: UserRead = UserRead(id=received_user.id, **received_user.name.model_dump())
 
     return ApiResponse
 
@@ -53,8 +56,11 @@ async def update_user(
     user_service: FromDishka[UserService],
 ) -> UserRead:
 
-    updated_user: UserDTO = await user_service.update_user(user_id=user_id, user_data=user_data)
-    ApiResponse: UserRead = UserRead(**updated_user.model_dump())
+    try:
+        updated_user: UserDTO = await user_service.update(user_id=user_id, user_data=user_data)
+    except EntityDoesNotExist:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    ApiResponse: UserRead = UserRead(id=updated_user.id, **updated_user.name.model_dump())
 
     return ApiResponse
 
@@ -66,9 +72,11 @@ async def delete_user(
     user_service: FromDishka[UserService],
 ) -> UserRead:
 
-    deleted_user: UserDTO = await user_service.delete_user(user_id)
-    if not deleted_user:
+    try:
+        deleted_user: UserDTO = await user_service.delete(user_id)
+    except EntityDoesNotExist:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-    ApiResponse: UserRead = UserRead(**deleted_user.model_dump())
+
+    ApiResponse: UserRead = UserRead(id=deleted_user.id, **deleted_user.name.model_dump())
 
     return ApiResponse

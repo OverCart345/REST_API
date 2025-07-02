@@ -3,9 +3,11 @@ from sqlmodel import Session
 from users.application.models.models import User, FullName
 from users.application.repository.abstract_user_repository import AbstractUserRepository
 from users.infrastructure.db.models import UserORM
+from users.application.exception import EntityDoesNotExist
+
 
 class SQLUserRepository(AbstractUserRepository):
-    
+
     def __init__(self, session: Session):
         self.session = session
 
@@ -42,24 +44,29 @@ class SQLUserRepository(AbstractUserRepository):
 
         return self.orm_to_domain(db_user)
 
-
-    async def get_by_id(self, user_id: int) -> User:
+    async def get_by_id(self, user_id: int) -> User | None:
         db_user = self.session.get(UserORM, user_id)
+        if db_user is None:
+            return None
 
         return self.orm_to_domain(db_user)
 
+    async def update(self, user: User) -> User | None:
+        db_user = self.session.get(UserORM, user.id)
+        if db_user is None:
+            return None
 
-    async def update(self, user_id: int, user: User) -> User:
         updated_db_user = self.session.merge(self.domain_to_orm(user))
         self.session.commit()
 
         return self.orm_to_domain(updated_db_user)
 
-
-    async def delete(self, user_id: int) -> User:
+    async def delete(self, user_id: int) -> User | None:
         db_user = self.session.get(UserORM, user_id)
-        if not db_user:
+        if db_user is None:
             return None
+
         self.session.delete(db_user)
         self.session.commit()
+
         return self.orm_to_domain(db_user)

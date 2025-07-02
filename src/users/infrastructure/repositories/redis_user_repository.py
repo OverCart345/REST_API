@@ -1,50 +1,53 @@
-
-from typing import Optional
 import redis.asyncio as aioredis
+from typing import Optional
 
+from users.application.models.models import User
 from users.application.repository.abstract_user_repository import AbstractUserRepository
-from users.models import User, UserCreate, UserUpdate
 
-USER_KEY_PREFIX = "user:"
-USER_NEXT_ID_KEY = "user:next_id"
 
 class RedisUserRepository(AbstractUserRepository):
+    USER_KEY_PREFIX = "user:"
+    USER_NEXT_ID_KEY = "user:next_id"
+
     def __init__(self, redis_client: aioredis.Redis):
-        self.redis = redis_client
+        self.redis: aioredis.Redis = redis_client
 
-    async def _generate_id(self) -> int:
-        return await self.redis.incr(USER_NEXT_ID_KEY)
+    def _key(self, user_id: int) -> str:
+        return f"{self.USER_KEY_PREFIX}{user_id}"
 
-    async def create_user(self, user_data: UserCreate) -> User:
-        user_id = await self._generate_id()
-        user = User(id=user_id, **user_data.model_dump())
-        user_json = user.model_dump_json()
-        await self.redis.set(f"{USER_KEY_PREFIX}{user_id}", user_json)
+    @staticmethod
+    def _json_to_domain(raw: bytes | str | None) -> Optional[User]:
+        if not raw:
+            return None
+        if isinstance(raw, bytes):
+            raw = raw.decode()
+        return User.model_validate_json(raw)
 
+    @staticmethod
+    def _domain_to_json(entity: User) -> str:
+        return entity.model_dump_json()
+
+    async def create(self, user: User) -> User:
+        if user.id is None:
+            user.id = await self.redis.incr(self.USER_NEXT_ID_KEY)
+        await self.redis.set(self._key(user.id), self._domain_to_json(user))
         return user
 
-    async def get_user_by_id(self, user_id: int) -> Optional[User]:
-        user_json = await self.redis.get(f"{USER_KEY_PREFIX}{user_id}")
-        if user_json:
-            return User.model_validate_json(user_json)
-        return None
+    async def get_by_id(self, user_id: int) -> Optional[User]:
+        raw = await self.redis.get(self._key(user_id))
+        return self._json_to_domain(raw)
 
-    async def update_user(self, user_id: int, user_data: UserUpdate) -> Optional[User]:
-        user = await self.get_user_by_id(user_id)
-        if not user:
+    async def update(self, user: User) -> Optional[User]:
+        key = self._key(user.id)
+        if not await self.redis.exists(key):
             return None
-
-        update_data = user_data.model_dump(exclude_unset=True)
-        updated_user = user.model_copy(update=update_data)
-        
-        user_json = updated_user.model_dump_json()
-        await self.redis.set(f"{USER_KEY_PREFIX}{user_id}", user_json)
-        return updated_user
-
-    async def delete_user(self, user_id: int) -> Optional[User]:
-        user = await self.get_user_by_id(user_id)
-        if not user:
-            return None
-        await self.redis.delete(f"{USER_KEY_PREFIX}{user_id}")
-
+        await self.redis.set(key, self._domain_to_json(user))
         return user
+
+    async def delete(self, user_id: int) -> Optional[User]:
+        key = self._key(user_id)
+        raw = await self.redis.get(key)
+        if not raw:
+            return None
+        await self.redis.delete(key)
+        return self._json_to_domain(raw)

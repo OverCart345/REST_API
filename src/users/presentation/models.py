@@ -10,6 +10,8 @@ class UserCreate(BaseModel):
     @model_validator(mode="after")
     def validate_empty_fields(self):
         for key, value in self.model_dump().items():
+            if not value.isalpha():
+                raise ValueError('Значение может содержать только буквенные символы')
             if value == "" and isinstance(value, str):
                 setattr(self, key, None)
 
@@ -42,6 +44,8 @@ class UserUpdate(BaseModel):
     @model_validator(mode="after")
     def validate_empty_fields(self):
         for key, value in self.model_dump().items():
+            if not value.isalpha():
+                raise ValueError('Значение может содержать только буквенные символы')
             if value == "" and isinstance(value, str):
                 setattr(self, key, None)
 

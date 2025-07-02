@@ -1,13 +1,12 @@
 from http import HTTPStatus
 import pytest
-from users.models import UserRead, UserCreate, UserUpdate
+from users.presentation.models import UserCreate, UserRead, UserUpdate
+
 
 @pytest.mark.parametrize("payload", [
-    {"last_name": "Иванов", "first_name": "Иван", "middle_name": "Иванович"},
-    {"last_name": "Ниикта", "first_name": "НИк"}
+    {"last_name": "Ниикта", "first_name": "Ник"}
 ])
 async def test_create(client, payload):
-
     user = UserCreate(**payload)
     assert isinstance(user, UserCreate)
 
@@ -23,6 +22,15 @@ async def test_create(client, payload):
     assert hasattr(user, "id")
 
 
+@pytest.mark.parametrize("payload", [
+    {"last_name": "Ниикта", "middle_name": "Ник"}
+])
+async def test_create_failed(client, payload):
+    response = await client.post("/users/", json=payload)
+
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+
 async def test_get(client, new_user):
     response = await client.get(f"/users/{new_user.id}")
     assert response.status_code == HTTPStatus.OK
@@ -30,10 +38,17 @@ async def test_get(client, new_user):
     user = UserRead(**response.json())
     assert user.id == new_user.id
 
-@pytest.mark.parametrize("payload",[
-    {"last_name": "1", "first_name":"2", "middle_name":"3"},
-    {"last_name": "1", "middle_name":"3"},
-    {"middle_name":"3"},
+
+async def test_get_failed(client):
+    response = await client.get(f"/users/9999")
+    assert response.status_code == HTTPStatus.NOT_FOUND
+
+
+
+@pytest.mark.parametrize("payload", [
+    {"last_name": "1", "first_name": "2", "middle_name": "3"},
+    {"last_name": "1", "middle_name": "3"},
+    {"middle_name": "3"},
 ])
 async def test_update(client, new_user, payload):
     user_data = UserUpdate(**payload)
