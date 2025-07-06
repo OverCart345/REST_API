@@ -30,5 +30,9 @@ class MainProvider(Provider):
             raise ValueError(f"Unsupported REPO_TYPE: {settings.REPO_TYPE}. Must be 'sql' or 'redis'.")
 
     @provide(scope=Scope.REQUEST)
-    def provide_user_service(self, user_repo: AbstractUserRepository) -> UserService:
-        return UserService(user_repository=user_repo)
+    def provide_uow(self, session: Session, repository: AbstractUserRepository) -> IUnitOfWork:
+        return SQLAlchemyUnitOfWork(session , repository)
+
+    @provide(scope=Scope.REQUEST)
+    def provide_user_service(self, uow: IUnitOfWork) -> UserService:
+        return UserService(uow=uow)
