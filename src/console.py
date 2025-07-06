@@ -3,9 +3,8 @@ from typing import Optional
 from asyncclick_repl import AsyncREPL
 
 from users.application.user_service import UserService
-from users.models import UserCreate, UserRead, UserUpdate
 from main import container
-from main import app
+from users.application.models.dto import UserDTO
 
 @asyncclick.group(cls=AsyncREPL)
 async def cmd():
@@ -16,14 +15,14 @@ async def cmd():
 async def get(id: int):
     async with container() as request_container:
         user_service: UserService = await request_container.get(UserService)
-        user = await user_service.get_user(id)
+        user = await user_service.get(id)
         asyncclick.echo(user)
 
 
 @cmd.command(help="Create user in DB")
-@asyncclick.option('--last_name', prompt=True, help="Enter your name")
-@asyncclick.option('--first_name', prompt=True, help="Enter your name")
-@asyncclick.option('--middle_name', prompt="Middle name",default='', show_default=False, help="Enter your name")
+@asyncclick.option('--last_name', help="Enter your name")
+@asyncclick.option('--first_name', help="Enter your name")
+@asyncclick.option('--middle_name',  help="Enter your name")
 async def create(
         last_name: str,
         first_name: str,
@@ -34,12 +33,13 @@ async def create(
     async with container() as request_container:
         user_service: UserService = await request_container.get(UserService)
 
-        user_create_model = UserCreate(
+        user_data: UserDTO = UserDTO(
             last_name=last_name,
             first_name=first_name,
             middle_name=middle_name,
         )
-        user = await user_service.create_user(user_create_model)
+
+        user = await user_service.create(user_data)
         asyncclick.echo(user)
 
 
@@ -57,12 +57,12 @@ async def update(
     async with container() as request_container:
         user_service: UserService = await request_container.get(UserService)
 
-        user_update_model = UserUpdate(
+        user_data: UserDTO = UserDTO(
             last_name=last_name,
             first_name=first_name,
             middle_name=middle_name,
         )
-        user = await user_service.update_user(id, user_update_model)
+        user = await user_service.update(id, user_data)
         asyncclick.echo(user)
 
 
@@ -71,7 +71,7 @@ async def update(
 async def delete(id: int):
     async with container() as request_container:
         user_service: UserService = await request_container.get(UserService)
-        user = await user_service.delete_user(id)
+        user = await user_service.delete(id)
         asyncclick.echo(user)
 
 

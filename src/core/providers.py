@@ -3,9 +3,9 @@ from typing import Optional
 from sqlalchemy.orm import Session 
 
 from db import get_session, get_redis_client
-from users.infrastructure.repositories.core.abstract_user_repository import AbstractUserRepository
-from users.infrastructure.repositories.impl.sql_user_repository import SQLUserRepository
-from users.infrastructure.repositories.impl.redis_user_repository import RedisUserRepository
+from users.application.repository.abstract_user_repository import AbstractUserRepository
+from users.infrastructure.repositories.sql_user_repository import SQLUserRepository
+from users.infrastructure.repositories.redis_user_repository import RedisUserRepository
 from users.application.user_service import UserService
 from core.config import settings
 import redis.asyncio as aioredis
